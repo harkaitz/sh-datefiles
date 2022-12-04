@@ -7,8 +7,8 @@ install:
 install: install-sh
 install-sh:
 	@mkdir -p $(DESTDIR)$(PREFIX)/bin
-	@echo 'I bin/undatefiles'; cp bin/undatefiles $(DESTDIR)$(PREFIX)/bin
 	@echo 'I bin/datefiles' ; cp bin/datefiles   $(DESTDIR)$(PREFIX)/bin
+	@echo 'I bin/undatefiles'; cp bin/undatefiles $(DESTDIR)$(PREFIX)/bin
 ## -- install-sh --
 ## -- license --
 install: install-license
