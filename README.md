@@ -1,17 +1,7 @@
 # SH-DATEFILE
 
 Create directories with "YYYY-MM-DD" format and catalog/decatalog
-files into them.
-
-## Prerequisites
-
-- *Imagemagick identify* : To extract date from images.
-- *exiftool* : To extract date from videos.
-- In other cases it uses *stat(1)*.
-
-## Installing
-
-The usual `make install`.
+files into them. Uses *stat(1)* to fetch dates.
 
 ## Help
 
@@ -36,4 +26,3 @@ one of the following links:
 
 1. [gemini://harkadev.com/oss/](gemini://harkadev.com/oss/)
 2. [https://harkadev.com/oss/](https://harkadev.com/oss/)
-

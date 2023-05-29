@@ -1,30 +1,27 @@
 #!/bin/sh -e
-#L:
 #L:  MIT License
-#L:  
-#l:  Bug reports, feature requests to gemini|https://harkadev.com/oss
+#L:
 #l:  Copyright (c) 2023 Harkaitz Agirre, harkaitz.aguirre@gmail.com
 #L:
-#L:  Permission is hereby granted, free of charge, to any person obtaining
-#L:  a copy of this software and associated documentation files (the
-#L:  "Software"), to deal in the Software without restriction, including
-#L:  without limitation the rights to use, copy, modify, merge, publish,
-#L:  distribute, sublicense, and/or sell copies of the Software, and to
-#L:  permit persons to whom the Software is furnished to do so, subject to
-#L:  the following conditions:
+#L:  Permission is hereby granted, free of charge, to any person obtaining a copy
+#L:  of this software and associated documentation files (the "Software"), to deal
+#L:  in the Software without restriction, including without limitation the rights
+#L:  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+#L:  copies of the Software, and to permit persons to whom the Software is
+#L:  furnished to do so, subject to the following conditions:
 #L:
-#L:  The above copyright notice and this permission notice shall be
-#L:  included in all copies or substantial portions of the Software.
+#L:  The above copyright notice and this permission notice shall be included in all
+#L:  copies or substantial portions of the Software.
 #L:
-#L:  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-#L:  EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-#L:  MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-#L:  NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
-#L:  LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
-#L:  OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
-#L:  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+#L:  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+#L:  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+#L:  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+#L:  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+#L:  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+#L:  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+#L:  SOFTWARE.
 ##:
-#h: Usage: $0 -m [-q] [FDIR [TDIR]]
+#h: Usage: datefiles -m [-q] [FDIR [TDIR]]
 #h:
 #h: Catalog files by creation dates, by creating the necessary
 #h: directories. By default it makes a bare run, put -m to
@@ -62,7 +59,7 @@ datefiles() {
             mv -- "${f}.t.gif" "${tdir}/${d}"
         fi
     done
-    find "${tdir}" -mindepth 1 -maxdepth 1 -type d -iregex '.*/....-..-..$' | while read -r d; do
+    find "${tdir}" -mindepth 1 -maxdepth 1 -type d | grep '.*/....-..-..$' | while read -r d; do
         if test -n "`ls "${d}"`"; then
             continue
         fi
@@ -78,66 +75,31 @@ datefiles() {
         echo "# Bare run, run with -m to actually perform the tasks."
     fi
 }
-datefiles_check_programs() {
-    local ret=0
-    if ! which "identify" >/dev/null 2>&1; then
-        error "Program 'identify' does not exist."
-        ret=1
-    fi
-    if ! which "exiftool" >/dev/null 2>&1; then
-        error "Program 'exiftool' does not exist."
-        ret=1
-    fi
-    return ${ret}
-}
-## -----------------------------------------------------------------------------
+## -------------------------------------------------------------------
 datefiles_get_cdate() {
     case "${1}" in
-        *.t.gif)
-            true
-            ;;
         */IMG_20*_*|*/IMG_20*-*)
             echo "${1}" | sed 's|IMG_\(20..\)\(..\)\(..\).*|\1-\2\-\3|p'
             ;;
         */VID-20*-WA*)
             echo "${1}" | sed 's|VID-\(20..\)\(..\)\(..\).*|\1-\2\-\3|p'
             ;;
-        *.jpg|*.jpeg|*.JPG)
-            identify -verbose -- "${1}" | sed -n '
-            s| *date:create: *\(....-..-..\).*|\1|p
-            s| *date:modify: *\(....-..-..\).*|\1|p
-            ' | sort
-            ;;
-        *.mp4|*.mov|*.MOV|*.MP4)
-            exiftool -- "${1}" | sed -n '
-            s|^Create Date *: *\(....\):\(..\):\(..\).*|\1-\2-\3|p
-            '
-            ;;
-        *.webm)
-            exiftool -- "${1}" | sed -n '
-            s|^Date/Time Original *: *\(....\):\(..\):\(..\).*|\1-\2-\3|p
-            '
-            ;;
         *)
             date -d "@`stat -c '%Y' "${1}"`" '+%Y-%m-%d'
             ;;
     esac | head -n 1
 }
-
-
-## -----------------------------------------------------------------------------
-error() { echo "${SCRNAME}: $*" >&2; }
-SCRNAME="`basename "$0"`"
-datefiles_check_programs
-if test @"${SCRNAME}" = @"datefiles";then
+## -------------------------------------------------------------------
+if test @"`basename "$0"`" = @"datefiles";then
     case "${1}" in
         -h|--help)
-            sed -n 's/^ *#h: \{0,1\}//p' "$0" | sed "s|\\\$0|${SCRNAME}|g"
+            sed -n 's/^ *#h: \{0,1\}//p' "$0"
             echo ""
             sed -n 's/^ *#l: \{0,2\}//p' "$0"
             ;;
         *)
             datefiles "$@"
+            exit 0
             ;;
     esac
 fi
