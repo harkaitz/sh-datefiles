@@ -1,4 +1,4 @@
-# SH-DATEFILE
+# DATEFILE
 
 Create directories with "YYYY-MM-DD" format and catalog/decatalog
 files into them. Uses *stat(1)* to fetch dates.
